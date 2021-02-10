@@ -4,13 +4,35 @@ variable "acl" {
   default     = "log-delivery-write"
 }
 
+variable "analytics_bucket_name" {
+  type        = string
+  default     = ""
+  description = "Name of the S3 bucket where s3 analytics report will be sent to"
+}
+
+variable "enabled_analytics" {
+  type        = bool
+  default     = false
+  description = "Set to false to prevent the module from creating s3 analytics bucket"
+}
+
 variable "policy" {
   type        = string
   description = "A valid bucket policy JSON document. Note that if the policy document is not specific enough (but still valid), Terraform may view the policy as constantly changing in a terraform plan. In this case, please make sure you use the verbose/specific version of the policy"
   default     = ""
 }
 
-variable "lifecycle_rules" {}
+variable "object_ownership" {
+  type        = string
+  description = "Object ownership. Valid values: BucketOwnerPreferred or ObjectWriter"
+  default     = "BucketOwnerPreferred"  
+}
+
+variable "lifecycle_rules" {
+  type        = list
+  description = "lifecycle values for multiple lifecycle rules"
+  default     = []
+}
 
 variable "lifecycle_prefix" {
   type        = string
