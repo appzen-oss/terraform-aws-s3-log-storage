@@ -10,6 +10,8 @@ variable "policy" {
   default     = ""
 }
 
+variable "lifecycle_rules" {}
+
 variable "lifecycle_prefix" {
   type        = string
   description = "Prefix filter. Used to manage object lifecycle events"

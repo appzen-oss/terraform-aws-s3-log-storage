@@ -11,44 +11,56 @@ resource "aws_s3_bucket" "default" {
     enabled = var.versioning_enabled
   }
 
-  lifecycle_rule {
-    id                                     = module.this.id
-    enabled                                = var.lifecycle_rule_enabled
-    prefix                                 = var.lifecycle_prefix
-    tags                                   = var.lifecycle_tags
-    abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
-
-    noncurrent_version_expiration {
-      days = var.noncurrent_version_expiration_days
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.enable_glacier_transition ? [1] : []
-
-      content {
-        days          = var.noncurrent_version_transition_days
-        storage_class = "GLACIER"
+  dynamic "lifecycle_rule" {
+    for_each = [for i in var.lifecycle_rules: {
+      id = i.lifecycle_prefix 
+      lifecycle_prefix = i.lifecycle_prefix
+      noncurrent_version_expiration_days = i.noncurrent_version_expiration_days
+      noncurrent_version_transition_days = i.noncurrent_version_transition_days
+      standard_transition_days = i.standard_transition_days
+      glacier_transition_days = i.glacier_transition_days
+      expiration_days = i.expiration_days
       }
-    }
+    ]
 
-    transition {
-      days          = var.standard_transition_days
-      storage_class = "STANDARD_IA"
-    }
-
-    dynamic "transition" {
-      for_each = var.enable_glacier_transition ? [1] : []
-
-      content {
-        days          = var.glacier_transition_days
-        storage_class = "GLACIER"
+    content {
+      id                                     = lifecycle_rule.value.id
+      enabled                                = var.lifecycle_rule_enabled
+      prefix                                 = lifecycle_rule.value.lifecycle_prefix
+      tags                                   = var.lifecycle_tags
+      abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
+    
+      noncurrent_version_expiration {
+        days = lifecycle_rule.value.noncurrent_version_expiration_days
       }
-    }
 
-    expiration {
-      days = var.expiration_days
-    }
+      dynamic "noncurrent_version_transition" {
+        for_each = var.enable_glacier_transition ? [1] : []
 
+        content {
+          days          = lifecycle_rule.value.noncurrent_version_transition_days
+          storage_class = "GLACIER"
+        }
+      }
+
+      transition {
+        days          = lifecycle_rule.value.standard_transition_days
+        storage_class = "STANDARD_IA"
+      }
+
+      dynamic "transition" {
+        for_each = var.enable_glacier_transition ? [1] : []
+
+        content {
+          days          = lifecycle_rule.value.glacier_transition_days
+          storage_class = "GLACIER"
+        }
+      }
+
+      expiration {
+        days = lifecycle_rule.value.expiration_days
+      }
+   }
   }
 
   dynamic "logging" {
