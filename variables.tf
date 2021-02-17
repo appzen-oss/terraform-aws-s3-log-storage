@@ -31,13 +31,14 @@ variable "object_ownership" {
 variable "lifecycle_rules" {
   type        = list
   description = "lifecycle values for multiple lifecycle rules"
-  default     = []
-}
-
-variable "lifecycle_prefix" {
-  type        = string
-  description = "Prefix filter. Used to manage object lifecycle events"
-  default     = ""
+  default     = [{
+      lifecycle_prefix   = "dev"
+      noncurrent_version_expiration_days = 365
+      noncurrent_version_transition_days = 30
+      standard_transition_days = 30
+      glacier_transition_days = 60
+      expiration_days = 365
+    },]
 }
 
 variable "lifecycle_tags" {
