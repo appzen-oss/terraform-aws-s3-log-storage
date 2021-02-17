@@ -177,7 +177,6 @@ Available targets:
 | label\_key\_case | The letter case of label keys (`tag` names) (i.e. `name`, `namespace`, `environment`, `stage`, `attributes`) to use in `tags`.<br>Possible values: `lower`, `title`, `upper`.<br>Default value: `title`. | `string` | `null` | no |
 | label\_order | The naming order of the id output and Name tag.<br>Defaults to ["namespace", "environment", "stage", "name", "attributes"].<br>You can omit any of the 5 elements, but at least one must be present. | `list(string)` | `null` | no |
 | label\_value\_case | The letter case of output label values (also used in `tags` and `id`).<br>Possible values: `lower`, `title`, `upper` and `none` (no transformation).<br>Default value: `lower`. | `string` | `null` | no |
-| lifecycle\_prefix | Prefix filter. Used to manage object lifecycle events | `string` | `""` | no |
 | lifecycle\_rule\_enabled | Enable lifecycle events on this bucket | `bool` | `true` | no |
 | lifecycle\_rules | lifecycle values for multiple lifecycle rules | `list` | `[]` | no |
 | lifecycle\_tags | Tags filter. Used to manage object lifecycle events | `map(string)` | `{}` | no |
