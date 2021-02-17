@@ -97,3 +97,58 @@ resource "aws_s3_bucket_public_access_block" "default" {
   ignore_public_acls      = var.ignore_public_acls
   restrict_public_buckets = var.restrict_public_buckets
 }
+
+## Set object_ownership to bucket_owner
+resource "aws_s3_bucket_ownership_controls" "object_ownership_control" {
+  count  = module.this.enabled ? 1 : 0
+  bucket = join("", aws_s3_bucket.default.*.id)
+
+  rule {
+    object_ownership = var.object_ownership
+  }
+}
+
+## Enabled s3 bucket analytics
+resource "aws_s3_bucket_analytics_configuration" "entire-bucket" {
+  count  = var.enabled_analytics ? 1 : 0
+  bucket = join("", aws_s3_bucket.default.*.id)
+  name   = "EntireBucket"
+
+  storage_class_analysis {
+    data_export {
+      destination {
+        s3_bucket_destination {
+          bucket_arn = join("", aws_s3_bucket.analytics.*.arn) 
+        }
+      }
+    }
+  }
+}
+
+## s3 bucket analytics analytics 
+resource "aws_s3_bucket" "analytics" {  
+  count  = var.enabled_analytics ? 1 : 0
+  bucket = var.analytics_bucket_name
+}
+
+## Add analytics configuration with S3 bucket object filter
+# resource "aws_s3_bucket_analytics_configuration" "analytics-filtered" {
+#  count = length(var.lifecycle_rules)
+#  bucket = join("", aws_s3_bucket.default.*.id)
+#
+#  name   = "${var.lifecycle_rules[count.index].lifecycle_prefix}-filter"
+#  filter {
+#    prefix = "${var.lifecycle_rules[count.index].lifecycle_prefix}/"
+#  }
+#}
+
+## Create folders inside s3 bucket
+resource "aws_s3_bucket_object" "prefix" {
+  count = length(var.lifecycle_rules)
+  bucket = join("", aws_s3_bucket.default.*.id)
+
+  acl                    = "private"
+  key                    = "${var.lifecycle_rules[count.index].lifecycle_prefix}/"
+  source                 = "/dev/null"
+  server_side_encryption = var.sse_algorithm
+}
