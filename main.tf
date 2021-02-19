@@ -39,7 +39,7 @@ resource "aws_s3_bucket" "default" {
 
         content {
           days          = lifecycle_rule.value.noncurrent_version_transition_days
-          storage_class = "GLACIER"
+          storage_class = "DEEP_ARCHIVE"
         }
       }
 
@@ -53,7 +53,7 @@ resource "aws_s3_bucket" "default" {
 
         content {
           days          = lifecycle_rule.value.glacier_transition_days
-          storage_class = "GLACIER"
+          storage_class = "DEEP_ARCHIVE"
         }
       }
 
