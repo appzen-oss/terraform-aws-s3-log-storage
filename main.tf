@@ -132,15 +132,15 @@ resource "aws_s3_bucket" "analytics" {
 }
 
 ## Add analytics configuration with S3 bucket object filter
-# resource "aws_s3_bucket_analytics_configuration" "analytics-filtered" {
-#  count = length(var.lifecycle_rules)
-#  bucket = join("", aws_s3_bucket.default.*.id)
-#
-#  name   = "${var.lifecycle_rules[count.index].lifecycle_prefix}-filter"
-#  filter {
-#    prefix = "${var.lifecycle_rules[count.index].lifecycle_prefix}/"
-#  }
-#}
+resource "aws_s3_bucket_analytics_configuration" "analytics-filtered" {
+  count = length(var.lifecycle_rules)
+  bucket = join("", aws_s3_bucket.default.*.id)
+
+  name   = "${var.lifecycle_rules[count.index].lifecycle_prefix}-filter"
+  filter {
+    prefix = "${var.lifecycle_rules[count.index].lifecycle_prefix}/"
+  }
+}
 
 ## Create folders inside s3 bucket
 resource "aws_s3_bucket_object" "prefix" {
