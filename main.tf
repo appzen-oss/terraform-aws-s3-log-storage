@@ -42,11 +42,12 @@ resource "aws_s3_bucket" "default" {
           storage_class = "DEEP_ARCHIVE"
         }
       }
-
-      transition {
-        days          = lifecycle_rule.value.standard_transition_days
-        storage_class = "STANDARD_IA"
-      }
+      
+      ## Moving directly glacier deep archive
+      #transition {
+      #  days          = lifecycle_rule.value.standard_transition_days
+      #  storage_class = "STANDARD_IA"
+      #}
 
       dynamic "transition" {
         for_each = var.enable_glacier_transition ? [1] : []
